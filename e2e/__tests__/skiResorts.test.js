@@ -1,0 +1,58 @@
+const request = require('../request');
+const db = require('../db');
+const { signupUser } = require('../data-helpers');
+
+describe('Ski Resorts API', () => {
+  beforeEach(() => db.dropCollection('users'));
+  beforeEach(() => db.dropCollection('ski-resorts'));
+
+  let user = null;
+  beforeEach(() => {
+    return signupUser().then(newUser => (user = newUser));
+  });
+
+  const skiResort = {
+    name: 'Revel Stoke',
+    location: 'British Columbia',
+    elevation: 5000,
+    lifts: 3
+  };
+
+  it('posts a ski resort for this user', () => {
+    return request
+      .post('/api/ski-resorts')
+      .set('Authorization', user.token)
+      .send(skiResort)
+      .expect(200)
+      .then(({ body }) => {
+        console.log(body.owner);
+        expect(body.owner).toBe(user._id);
+        expect(body).toMatchInlineSnapshot(
+          {
+            _id: expect.any(String),
+            owner: expect.any(String)
+          },
+          `
+          Object {
+            "__v": 0,
+            "_id": Any<String>,
+            "elevation": 5000,
+            "lifts": 3,
+            "location": "British Columbia",
+            "name": "Revel Stoke",
+            "owner": Any<String>,
+          }
+        `
+        );
+      });
+  });
+
+  it('gets a list of ski resorts', () => {
+
+  });
+
+  it('deletes a ski resort', () => {
+
+  });
+
+});
