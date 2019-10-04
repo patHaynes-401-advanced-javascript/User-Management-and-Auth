@@ -14,7 +14,8 @@ describe('Ski Resorts API', () => {
   const skiResort = {
     name: 'RevelStoke',
     location: 'British Columbia',
-    elevation: '1'
+    lifts: 2,
+    elevation: '5000'
   };
 
   const bob = {
@@ -40,18 +41,7 @@ describe('Ski Resorts API', () => {
       .then(({ body }) => body);
   }
 
-  function putResort(resort, token) {
-    return postResort()
-      .then(resort => {
-        return request
-          .put(`/api/me/favorites/${resort._id}`)
-          .set('Authorization', token)
-          .expect(200)
-          .then(({ body }) => body);
-      });
-  }
-
-  it('gets a users favorite resort by Id', () => {
+  it('puts users favorites into database', () => {
     return postUser(bob).then(person => {
       return postResort(skiResort, person.token).then(resort => {
         return request
@@ -60,30 +50,72 @@ describe('Ski Resorts API', () => {
           .send(person)
           .expect(200)
           .then(({ body }) => {
-            expect(body[0]).toBe(resort._id);
+            expect(body).toMatchInlineSnapshot(
+              {
+                _id: expect.any(String),
+                favorites: expect.any(Array),
+                hash: expect.any(String)
+              },
+              `
+              Object {
+                "__v": 0,
+                "_id": Any<String>,
+                "email": "bob@bobross.com",
+                "favorites": Any<Array>,
+                "hash": Any<String>,
+                "roles": Array [
+                  "student",
+                ],
+              }
+            `
+            );
           });
       });
     });
   });
 
-
-  it.skip('gets a favorite resort', () => {
+  it('gets a users favorite', () => {
     return postUser(bob).then(person => {
-      return putResort(skiResort).then(() => {
+      return postResort(skiResort, person.token).then(resort => {
         return request
-          .delete(`/api/me/favorites/`)
+          .put(`/api/me/favorites/${resort._id}`)
           .set('Authorization', person.token)
+          .send(person)
           .expect(200)
-          .then(({ body }) => {
-            expect(body).toMatchInlineSnapshot();
-
-
+          .then(() => {
+            return request
+              .get(`/api/me/${person._id}`)
+              .set('Authorization', person.token)
+              .then(res => {
+                expect(res.body.favorites[0]).toMatchInlineSnapshot(
+                  {
+                    _id: expect.any(String),
+                    owner: expect.any(String)
+                  },
+                  `
+                  Object {
+                    "__v": 0,
+                    "_id": Any<String>,
+                    "elevation": 5000,
+                    "lifts": 2,
+                    "location": "British Columbia",
+                    "name": "RevelStoke",
+                    "owner": Any<String>,
+                  }
+                `
+                );
+              });
           });
-
-
       });
     });
+  });
+
+  it('deletes a users favorite', () => {
 
   });
+
+
+
+
 
 });
