@@ -24,7 +24,6 @@ describe('Ski Resorts API', () => {
   };
 
   function postResort(resort, token) {
-    console.log(token);
     return request
       .post('/api/ski-resorts')
       .set('Authorization', token)
@@ -41,7 +40,18 @@ describe('Ski Resorts API', () => {
       .then(({ body }) => body);
   }
 
-  it.only('gets a users favorite resort by Id', () => {
+  function putResort(resort, token) {
+    return postResort()
+      .then(resort => {
+        return request
+          .put(`/api/me/favorites/${resort._id}`)
+          .set('Authorization', token)
+          .expect(200)
+          .then(({ body }) => body);
+      });
+  }
+
+  it('gets a users favorite resort by Id', () => {
     return postUser(bob).then(person => {
       return postResort(skiResort, person.token).then(resort => {
         console.log(person, resort);
@@ -56,9 +66,25 @@ describe('Ski Resorts API', () => {
       });
     });
   });
- 
 
-  it('puts users favorite to set', () => {});
 
-  it('deletes users favorite from set', () => {});
+  it('gets a favorite resort', () => {
+    return postUser(bob).then(person => {
+      return putResort(skiResort).then(() => {
+        return request
+          .delete(`/api/me/favorites/`)
+          .set('Authorization', person.token)
+          .expect(200)
+          .then(({ body }) => {
+            expect(body).toMatchInlineSnapshot();
+
+
+          });
+
+
+      });
+    });
+
+  });
+
 });
