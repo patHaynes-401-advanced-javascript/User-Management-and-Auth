@@ -111,11 +111,45 @@ describe('Ski Resorts API', () => {
   });
 
   it('deletes a users favorite', () => {
-
+    return postUser(bob).then(person => {
+      return postResort(skiResort, person.token).then(resort => {
+        return request
+          .put(`/api/me/favorites/${resort._id}`)
+          .set('Authorization', person.token)
+          .send(person)
+          .expect(200)
+          .then(() => {
+            return request
+              .get(`/api/me/${person._id}`)
+              .set('Authorization', person.token)
+              .then(() => {
+                return request
+                  .put(`/api/me/remove/${resort._id}`)
+                  .set('Authorization', person.token)
+                  .expect(200)
+                  .then(res => {
+                    expect(res.body).toMatchInlineSnapshot(
+                      {
+                        _id: expect.any(String),
+                        hash: expect.any(String)
+                      },
+                      `
+                      Object {
+                        "__v": 0,
+                        "_id": Any<String>,
+                        "email": "bob@bobross.com",
+                        "favorites": Array [],
+                        "hash": Any<String>,
+                        "roles": Array [
+                          "student",
+                        ],
+                      }
+                    `
+                    );
+                  });
+              });
+          });
+      });
+    });
   });
-
-
-
-
-
 });

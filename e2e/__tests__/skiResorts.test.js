@@ -18,6 +18,15 @@ describe('Ski Resorts API', () => {
     lifts: 3
   };
 
+  function postResort(resort, token) {
+    return request
+      .post('/api/ski-resorts')
+      .set('Authorization', token)
+      .send(resort)
+      .expect(200)
+      .then(body => body.body);
+  }
+
   it('posts a ski resort for this user', () => {
     return request
       .post('/api/ski-resorts')
@@ -25,7 +34,6 @@ describe('Ski Resorts API', () => {
       .send(skiResort)
       .expect(200)
       .then(({ body }) => {
-        console.log(body.owner);
         expect(body.owner).toBe(user._id);
         expect(body).toMatchInlineSnapshot(
           {
@@ -47,12 +55,38 @@ describe('Ski Resorts API', () => {
       });
   });
 
-  it('gets a list of ski resorts', () => {
-
+  it.only('gets a list of ski resorts', () => {
+    console.log('starting!');
+    return Promise.all([
+      postResort(skiResort, user.token),
+      postResort(skiResort, user.token),
+      postResort(skiResort, user.token)
+    ]).then(() => {
+      return request
+        .get('/api/ski-resorts')
+        .set('Authorization', user.token)
+        .expect(200)
+        .then(body => {
+          expect(body.body[0]).toMatchInlineSnapshot(
+            {
+              _id: expect.any(String),
+              owner: expect.any(String)
+            },
+            `
+            Object {
+              "__v": 0,
+              "_id": Any<String>,
+              "elevation": 5000,
+              "lifts": 3,
+              "location": "British Columbia",
+              "name": "Revel Stoke",
+              "owner": Any<String>,
+            }
+          `
+          );
+        });
+    });
   });
 
-  it('deletes a ski resort', () => {
-
-  });
-
+  it.skip('deletes a ski resort', () => {});
 });
