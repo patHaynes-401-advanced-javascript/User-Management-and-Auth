@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const request = require('../request');
 const db = require('../db');
 const { signupUser } = require('../data-helpers');
