@@ -55,7 +55,7 @@ describe('Ski Resorts API', () => {
       });
   });
 
-  it.only('gets a list of ski resorts', () => {
+  it('gets a list of ski resorts', () => {
     console.log('starting!');
     return Promise.all([
       postResort(skiResort, user.token),
@@ -87,6 +87,4 @@ describe('Ski Resorts API', () => {
         });
     });
   });
-
-  it.skip('deletes a ski resort', () => {});
 });
