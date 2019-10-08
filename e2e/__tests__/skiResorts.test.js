@@ -67,6 +67,7 @@ describe('Ski Resorts API', () => {
         .set('Authorization', user.token)
         .expect(200)
         .then(body => {
+          console.log(body.body[0]);
           expect(body.body[0]).toMatchInlineSnapshot(
             {
               _id: expect.any(String),
