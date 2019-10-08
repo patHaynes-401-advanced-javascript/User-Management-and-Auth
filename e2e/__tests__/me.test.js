@@ -12,9 +12,9 @@ describe('Ski Resorts API', () => {
   });
 
   const skiResort = {
-    name: 'RevelStoke',
+    name: 'Revel Stoke',
     location: 'British Columbia',
-    lifts: 2,
+    lifts: 3,
     elevation: '5000'
   };
 
@@ -97,9 +97,9 @@ describe('Ski Resorts API', () => {
                     "__v": 0,
                     "_id": Any<String>,
                     "elevation": 5000,
-                    "lifts": 2,
+                    "lifts": 3,
                     "location": "British Columbia",
-                    "name": "RevelStoke",
+                    "name": "Revel Stoke",
                     "owner": Any<String>,
                   }
                 `
