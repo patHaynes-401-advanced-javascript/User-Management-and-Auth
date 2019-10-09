@@ -56,7 +56,6 @@ describe('Ski Resorts API', () => {
   });
 
   it('gets a list of ski resorts', () => {
-    console.log('starting!');
     return Promise.all([
       postResort(skiResort, user.token),
       postResort(skiResort, user.token),
