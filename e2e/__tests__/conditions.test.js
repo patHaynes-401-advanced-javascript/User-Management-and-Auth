@@ -131,4 +131,22 @@ describe('Ski Resort Conditions', () => {
         });
     });
   });
+
+  it('rejects puts by non-admins', () => {
+    return postCondition(snowConditionTwo).then(condition => {
+      return request
+        .put(`/api/snow-conditions/${condition._id}`)
+        .set('Authorization', userToken)
+        .send({
+          condition: 'blue bird'
+        })
+        .expect(400);
+    });
+  });
+
+
+
+
+
+
 });
