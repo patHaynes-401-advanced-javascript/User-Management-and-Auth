@@ -35,8 +35,17 @@ describe('Ski Resort Conditions', () => {
       .then(({ body }) => body);
   }
 
+  function postCondition(condition = snowConditionTwo) {
+    return request
+      .post('/api/snow-conditions')
+      .set('Authorization', adminToken)
+      .send(condition)
+      .expect(200)
+      .then(({ body }) => body);
+  }
+
   let adminToken;
-  let user;
+  let userToken;
 
   beforeEach(() => {
     return signupUser(adminPerson)
@@ -55,10 +64,14 @@ describe('Ski Resort Conditions', () => {
         });
       })
       .then(() => {
-        return User.find()
-          .then(() => {
-          });
+        return User.find().then(() => {});
       });
+  });
+
+  beforeEach(() => {
+    return signupUser(bob).then(user => {
+      userToken = user.token;
+    });
   });
 
   it('posts ski conditions with users permission', () => {
@@ -85,9 +98,37 @@ describe('Ski Resort Conditions', () => {
   });
 
   it('denies someone without user permission to post', () => {
-
+    return request
+      .post('/api/snow-conditions')
+      .set('Authorization', userToken)
+      .send(snowConditionOne)
+      .expect(400);
   });
 
-
-
+  it('only allows puts by admin', () => {
+    return postCondition(snowConditionTwo).then(condition => {
+      return request
+        .put(`/api/snow-conditions/${condition._id}`)
+        .set('Authorization', adminToken)
+        .send({
+          condition: 'blue bird'
+        })
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toMatchInlineSnapshot(
+            {
+              _id: expect.any(String)
+            },
+            `
+            Object {
+              "__v": 0,
+              "_id": Any<String>,
+              "condition": "blue bird",
+              "snowfall": 0,
+            }
+          `
+          );
+        });
+    });
+  });
 });
