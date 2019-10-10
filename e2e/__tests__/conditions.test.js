@@ -27,13 +27,6 @@ describe('Ski Resort Conditions', () => {
     password: 'pword'
   };
 
-  function singinAdminUser(admin = adminPerson) {
-    return request
-      .post('/api/auth/signin')
-      .send(admin)
-      .expect(200)
-      .then(({ body }) => body);
-  }
 
   function postCondition(condition = snowConditionTwo) {
     return request
@@ -144,9 +137,32 @@ describe('Ski Resort Conditions', () => {
     });
   });
 
-
-
-
-
-
+  it('lets all users get', () => {
+    return Promise.all([
+      postCondition(snowConditionOne),
+      postCondition(snowConditionOne)
+    ])
+      .then(() => {
+        return request
+          .get('/api/snow-conditions')
+          .set('Authorization', userToken)
+          .expect(200);
+      })
+      .then(({ body }) => {
+        expect(body.length).toBe(5);
+        expect(body[0]).toMatchInlineSnapshot(
+          {
+            _id: expect.any(String)
+          },
+          `
+          Object {
+            "__v": 0,
+            "_id": Any<String>,
+            "condition": "snowing",
+            "snowfall": 12,
+          }
+        `
+        );
+      });
+  });
 });
