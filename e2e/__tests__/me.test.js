@@ -1,15 +1,9 @@
 const request = require('../request');
 const db = require('../db');
-const { signupUser } = require('../data-helpers');
 
 describe('Ski Resorts API', () => {
   beforeEach(() => db.dropCollection('users'));
   beforeEach(() => db.dropCollection('ski-resorts'));
-
-  let user = null;
-  beforeEach(() => {
-    return signupUser().then(newUser => (user = newUser));
-  });
 
   const skiResort = {
     name: 'Revel Stoke',
